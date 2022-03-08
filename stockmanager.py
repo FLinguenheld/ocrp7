@@ -1,3 +1,7 @@
+from copy import deepcopy
+from threading import Thread
+from itertools import combinations
+
 from dataclasses import dataclass
 from typing import(Any,
                    Optional,
@@ -50,23 +54,31 @@ class Items_Combination:
     def __gt__(self, other):
         return self.gain > other.gain
 
+    def __len__(self):
+        return len(self.items)
 
-class Combinations_manager:
-    """ Use this class to save and sort combinations.
-        Add method will compare with previous saved combinations and replace the last if needed.
-        Combinations will be saved and sort in a list (0 index is the best) """
 
-    def __init__(self, number_of_results: int=3):
-        self.combinations: List = []
-        self.number_of_results = number_of_results
+class Combinations_manager(Thread):
 
-    def add(self, combination: Items_Combination):
+    def __init__(self, list_of_actions, r, best_of_the_best):
+        Thread.__init__(self)
+        
+        self.list_of_actions = list_of_actions
+        self.r = r
+        self.best_of_the_best = best_of_the_best
 
-        if combination.valid:
 
-            if len(self.combinations) < self.number_of_results:
-                self.combinations.append(combination)
-            elif combination > self.combinations[-1]:
-                self.combinations[-1] = combination
+    def run(self):
 
-            self.combinations.sort(reverse=True)
+        best_combination = None
+        for c in combinations(self.list_of_actions, self.r):
+                # self.nb_combinaisons += 1
+                new_combination = Items_Combination(c)
+
+                if not best_combination or new_combination > best_combination:
+                    best_combination = new_combination
+        
+        self.best_of_the_best.append(best_combination)
+
+        # return best_combination
+

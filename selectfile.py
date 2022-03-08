@@ -33,6 +33,7 @@ class SelectionFile:
             self.sf_current_choice = my_menu.show()
         else:
             self.sf_current_choice = str(self.sf_path / 'essai.csv')
+            # self.sf_current_choice = str(self.sf_path / 'essai3.csv')
 
         # Read the file --
         list_of_actions = []
@@ -42,4 +43,4 @@ class SelectionFile:
             for r in csv_dict:
                 list_of_actions.append(Item(f_name=r['Name'], f_price=int(r['Price']), f_profit=int(r['Profit'])))
 
-            return list_of_actions
+        return list_of_actions
