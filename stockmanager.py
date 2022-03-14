@@ -59,8 +59,9 @@ class Items_Combination:
 
 
 class Combinations_manager(Thread):
+    """ Test to dispatch all researches """
 
-    def __init__(self, list_of_actions, r, best_of_the_best):
+    def __init__(self, list_of_actions: list[Items_Combination], r: int, best_of_the_best: list[Items_Combination]):
         Thread.__init__(self)
         
         self.list_of_actions = list_of_actions

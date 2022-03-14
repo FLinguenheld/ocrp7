@@ -21,7 +21,7 @@ class SelectionFile:
     sf_current_choice: Optional[str]=""
 
 
-    def select_file(self, force_to_test: bool=False):
+    def select_file(self, force_to_test: str=''):
 
         if not force_to_test:
 
@@ -32,15 +32,14 @@ class SelectionFile:
             my_menu = Menu(header=self.sf_header, choices=fields, bodies=['Selectionnez un fichier à analyser'])
             self.sf_current_choice = my_menu.show()
         else:
-            self.sf_current_choice = str(self.sf_path / 'essai.csv')
-            # self.sf_current_choice = str(self.sf_path / 'essai3.csv')
+            self.sf_current_choice = str(self.sf_path / force_to_test)
 
         # Read the file --
         list_of_actions = []
         with open(self.sf_current_choice) as file:
             csv_dict = DictReader(file, delimiter=',')
 
-            for r in csv_dict:
-                list_of_actions.append(Item(f_name=r['Name'], f_price=int(r['Price']), f_profit=int(r['Profit'])))
+            for r in csv_dict
+                list_of_actions.append(Item(f_name=r['name'], f_price=float(r['price']), f_profit=float(r['profit'])))
 
         return list_of_actions
