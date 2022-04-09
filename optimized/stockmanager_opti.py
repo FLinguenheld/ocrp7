@@ -1,7 +1,9 @@
-from threading import Thread
 from random import sample
 from random import randint
 from dataclasses import dataclass
+
+from time import time
+
 
 @dataclass
 class Item:
@@ -21,7 +23,7 @@ class ItemsCombination:
     """ Container for a combination of several actions
         Performs calculations, checks and allows to compare with other combinations """
 
-    def __init__(self, max_amount: int):
+    def __init__(self, max_amount: int=0):
         self.max_amount =  max_amount
 
         self.items = []
@@ -56,9 +58,8 @@ class ItemsCombination:
         else:
             return f"Invalide, prix trop élevé : {self.price}"
 
-    def __gt__(self, other):                                    # Best choice ?
+    def __gt__(self, other):
         return self.gain > other.gain
-        # return self.complete_gain > other.complete_gain
 
     def __len__(self):
         return len(self.items)
@@ -68,41 +69,39 @@ class ItemsCombination:
 class Glouton:
     g_max: int
     g_list: list[Item]
-    g_max_items_in_combi: int=25
+    g_max_items_per_combi: int=25
 
-    def random(self):
+    def _random(self):
 
         currentCombination = ItemsCombination(max_amount=self.g_max)
 
-        indexes = sample(range(0, len(self.g_list)), len(self.g_list))            # Too long
-        # indexes = sample(range(0, len(self.g_list)), self.g_max_items_in_combi)
+        # indexes = sample(range(0, len(self.g_list)), len(self.g_list))            # Too long
+        indexes = sample(range(0, len(self.g_list)), self.g_max_items_per_combi)
 
         while currentCombination.price <= self.g_max and indexes:
             currentCombination.add(self.g_list[indexes.pop()])
 
         return currentCombination
 
-class GloutonThread(Thread):
+    def random_by_tries(self, nb_tries):
 
-    def __init__(self, g_max: int, g_list: list[Item], results: list, id_thread: int, counter: list[int]):
-        Thread.__init__(self)
-        self.stop = False
+        best_combination = ItemsCombination()
+        counter = 0
 
-        self.g_max = g_max
-        self.g_list = g_list
-        self.id_thread = id_thread
-        self.results = results
+        while counter < nb_tries:
+            best_combination = max(best_combination, self._random())
+            counter += 1
 
-        self.glouton = Glouton(self.g_max, self.g_list)
-        self.counter = counter
+        return best_combination
 
-    def run(self):
+    def random_by_time(self, time_in_seconds):
 
-        self.results[self.id_thread] = ItemsCombination(max_amount=self.g_max)
-        while not self.stop:
+        best_combination = ItemsCombination()
+        counter = 0
 
-            self.counter[self.id_thread] += 1
-            new_combination = self.glouton.random()
-            if new_combination > self.results[self.id_thread]:
-                self.results[self.id_thread] = new_combination
+        time_start = time()
+        while time() - time_start < time_in_seconds:
+            best_combination = max(best_combination, self._random())
+            counter += 1
 
+        return best_combination, counter
