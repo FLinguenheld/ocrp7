@@ -5,7 +5,7 @@ from typing import(Optional,
                    Any)
 
 from views.menu import (Menu, FieldMenu)
-from stockmanager import (Item)
+from stockmanager import (Stock)
 
 
 @dataclass
@@ -13,10 +13,8 @@ class SelectionFile:
 
     sf_header: str
     sf_bodies: Optional[list[str]]
-    sf_path: Path=Path(str(Path.cwd().parent) + '/fichiers')
+    sf_path: Path=Path(str(Path.cwd()) + '/fichiers')
     sf_current_choice: Any=""
-    sf_multiplier: float=1.0
-
 
     def select_file(self, force_to_test: str=''):
 
@@ -36,12 +34,16 @@ class SelectionFile:
             csv_dict = DictReader(file, delimiter=',')
 
             for r in csv_dict:
-                price = int(float(r['price']) * self.sf_multiplier)
-                profit = int(float(r['profit']) * self.sf_multiplier)
+
+                price = float(r['price'])
+                profit = float(r['profit'])
+
+                # price = abs(float(r['price'])
+                # profit = abs(float(r['profit'])
 
                 if price > 0 and profit > 0:
-                    list_of_actions.append(Item(f_name=r['name'],
-                                                f_price = price,
-                                                f_profit = profit))
+                    list_of_actions.append(Stock(f_name=r['name'],
+                                                 f_price = price,
+                                                 f_profit = profit))
 
         return list_of_actions
