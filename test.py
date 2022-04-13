@@ -1,6 +1,6 @@
 
 class Papa:
-    def __init__(self, liste_de_taches=[]):
+    def __init__(self, liste_de_taches=[], test=10, test2="manger"):
         self.liste_de_taches = liste_de_taches
 
     def __str__(self):
@@ -16,6 +16,10 @@ def genere_un_papa_avec_ses_taches():
 
     return un_papa
 
+
+
+print(Papa.__init__.__defaults__)
+
 le_meilleur_papa = genere_un_papa_avec_ses_taches()
 print(le_meilleur_papa)
 print(id(le_meilleur_papa))
@@ -30,3 +34,6 @@ encore_un_autre = genere_un_papa_avec_ses_taches()
 print(encore_un_autre)
 print(id(encore_un_autre))
 print(id(encore_un_autre.liste_de_taches))
+
+
+print(Papa.__init__.__defaults__)

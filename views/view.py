@@ -79,6 +79,13 @@ class View:
         self.continue_exec = 1
         self.loading.start()
 
+    def update_loading_text(self, txt: str):
+        self.loading.text = txt
+
+    def update_loading(self, percentage: int):
+        self.loading.percentage = percentage
+        # self.loading.text = 'A' * int((self.frame.width - self.frame.tab * 2) * percentage / 100)
+
     def stop_loading(self):
         """ Stop the loading thread """
         self.loading.continue_exec = 0
@@ -96,6 +103,8 @@ class _Loading(Thread):
         self.view_instance = view_instance  # To use the same frame object with view
         self.text = ""
         self.number_of_dots = 5
+        
+        self.percentage = 0
 
     def run(self):
         nb = 0
@@ -104,7 +113,20 @@ class _Loading(Thread):
 
             nb = nb + 1 if nb < self.number_of_dots else 1
 
-            self.view_instance.frame.print_text(self.text + '.' * nb, Justification.LEFT)
-            print("\033[2A")  # Replace the cursor
+            self.view_instance.frame.print_progress(self.percentage)
+            # print("\033[2A")  # Replace the cursor
 
-            time.sleep(0.3)
+            time.sleep(0.1)
+
+
+    # def run(self):
+    #     nb = 0
+    #     self.continue_exec = 1
+    #     while self.continue_exec == 1:
+
+    #         nb = nb + 1 if nb < self.number_of_dots else 1
+
+    #         self.view_instance.frame.print_text(self.text + ' .' * nb, Justification.LEFT)
+    #         print("\033[2A")  # Replace the cursor
+
+    #         time.sleep(0.3)

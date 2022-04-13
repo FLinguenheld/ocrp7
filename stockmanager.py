@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import(Any)
 
-from time import sleep
-
 @dataclass
 class Stock:
     """ Container for one ation """
@@ -21,30 +19,39 @@ class StocksCombination:
     """ Container for a combination of several stocks
         Performs calculations, checks and allows to compare with other combinations """
 
-    def __init__(self, stocks: Any, max_amount: float=500.0):
+    def __init__(self, stocks: Any=None, max_amount: float=500.0):
         self.max_amount =  max_amount
-        # self.valid = False
 
-        self.stocks = stocks
+        self.stocks = stocks or []
         self.price = 0.0
         self.profit = 0.0
         self.complete_profit = 0.0
 
         if stocks:
-            #Price
-            for it in stocks:
-                self.price += it.f_price
+            # Price
+            for s in stocks:
+                self.price += s.f_price
 
-            if self.price <= self.max_amount:
-                self.valid = True
+                # Gain
+                self.profit += s.f_price * s.f_profit / 100
+                self.complete_profit += s.f_price * (1 + s.f_profit / 100)
 
-                #Gain
-                for it in stocks:
-                    self.profit += it.f_price * it.f_profit / 100
-                    self.complete_profit += it.f_price * (1 + it.f_profit / 100)
+            # Checks if combination is valid :
+            if self.price >= self.max_amount:
+                self.reset()
+
+    def reset(self):
+        """ Reset all combination's values """
+        self.price = 0.0
+        self.profit = 0.0
+        self.complete_profit = 0.0
+        self.stocks = []
+
 
     def add(self, new_stock: Stock):
-        """ Adds an item and update price/profit/complete_profit """
+        """ Adds a stock and updates price/profit/complete_profit
+            Only if the max_amount is not exceeded
+            returns True if ok """
 
         if (new_stock.f_price + self.price) <= self.max_amount:
             self.stocks.append(new_stock)
@@ -66,7 +73,7 @@ class StocksCombination:
                                   f" — bénéfice {round(self.profit, 3)}" \
                                   f" — bénéfice total {round(self.complete_profit, 3)}"
         else:
-            return f"Invalide, prix : {self.price}"
+            return f"combination invalide, prix : {self.price} (maximum autorisé : {self.max_amount})"
 
     def __lt__(self, other):
         return self.profit < other.profit
@@ -79,6 +86,7 @@ class StocksCombination:
 
     @staticmethod
     def best_stock(a, b):
+        """ Returns the best stock """
         if a < b:
             return b
         else:
@@ -86,7 +94,8 @@ class StocksCombination:
 
     @staticmethod
     def best_stock_in_list(stocks_list):
-        best_stock = StocksCombination(stocks=[])
+        """ Loops in the list and return the best combination """
+        best_stock = StocksCombination()
 
         for stock in stocks_list:
             best_stock = StocksCombination.best_stock(best_stock, stock)

@@ -36,7 +36,7 @@ class Glutton:
 
     def random_by_tries(self, nb_tries):
 
-        best_combination = StocksCombination(stocks=[])
+        best_combination = StocksCombination()
         counter = 0
 
         while counter < nb_tries:
@@ -48,7 +48,7 @@ class Glutton:
 
     def random_by_time(self, time_in_seconds):
 
-        best_combination = StocksCombination(stocks=[])
+        best_combination = StocksCombination()
         counter = 0
 
         time_start = time()
