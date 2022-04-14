@@ -37,10 +37,11 @@ class Frame:
             case _:
                 return str("│" + line.center(self.width) + "│" )
 
-    def print_progress(self, percentage: int):
-        nb_squares = int(self.width * percentage / 100)
-        print("│" + '⯀' * nb_squares + " " * (self.width - nb_squares) + "│" )
-        print("\033[2A")  # Replace the cursor
+    def print_progress(self, text: str, percentage: int):
+        progress_width = self.width - len(text) - self.tab * 4
+        nb_full_squares = round(progress_width * percentage / 100)
+        self.print_text(text=f'{text} {"◼"  * nb_full_squares}{"◻" * (progress_width - nb_full_squares)}', justif=Justification.CENTER)
+        print("\033[2A")  # Replaces cursor
 
 
 # https://www.compart.com/fr/unicode/block/U+2500

@@ -47,25 +47,33 @@ def search_best(list_of_actions, nb_actions_per_combination, combinations, count
 select = SelectionFile(sf_header="Force brute", sf_bodies=['Selectionnez un fichier'])
 # list_of_actions = select.select_file()
 list_of_actions = select.select_file('essai.csv')
+# list_of_actions = select.select_file('essai_graph.csv')
+# list_of_actions = select.select_file('essai_24_actions.csv')
+# list_of_actions = select.select_file('essai_25_actions.csv')
+# list_of_actions = select.select_file('essai_27_actions.csv')
+# list_of_actions = select.select_file('essai_28_actions.csv')
 # list_of_actions = select.select_file('dataset1_Python+P7.csv')
 # list_of_actions = select.select_file('dataset2_Python+P7.csv')
 
+# list_of_actions = list_of_actions[:15]
 
 # −−−−−−−−−−−−−−−−−−−--−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 # -- Min / Max to reduce the list_combinations amount −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 max = search_last_indice_before_maxi(sorted(list_of_actions, key=lambda k: k.f_price), maxi=MAX_AMOUNT)
 min = search_last_indice_before_maxi(sorted(list_of_actions, key=lambda k: k.f_price, reverse=True), maxi=MAX_AMOUNT)
 
-total = 0
+# combinaisons number ?
+total_to_do = 0
 for i in range(min, max +1):
-    total += int(factorial(len(list_of_actions)) / (factorial(i) * (factorial(len(list_of_actions) - i))))
+    total_to_do += int(factorial(len(list_of_actions)) / (factorial(i) * (factorial(len(list_of_actions) - i))))
 
 # −−−−−−−−−−−−−−−−−−−--−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 # -- view −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 bodies = list()
 bodies.append(f'Fichier : {select.sf_current_choice}\n' \
-              f'Nombre de combinaisons à tester : {total}')
-my_view = View(header='Force brute threads', bodies=bodies)
+              f'{len(list_of_actions)} actions\n' \
+              f'Nombre de combinaisons à tester : {total_to_do}')
+my_view = View(header='Force brute', bodies=bodies)
 my_view.start_loading(text='Étude en cours ')
 t0 = time()
 
@@ -83,7 +91,7 @@ for i in range(min, max + 1):
     p.start()
 
 for t in threads:
-    my_view.update_loading(sum(counters) / total * 100)
+    my_view.update_loading(sum(counters) / total_to_do * 100)
     t.join()
 
 my_view.update_loading(100)

@@ -65,7 +65,7 @@ class View:
         self._ask_question('Appuyez sur entrer pour continuer')
 
     # Loading −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
-    def start_loading(self, text: str="", number_of_dots: int=5):
+    def start_loading(self, text: str=""):
         """ Refresh the screen, display the bodies, close the frame then replace the cursor """
 
         self.show(ended=False)
@@ -75,7 +75,6 @@ class View:
         print(f"\033[3A")
 
         self.loading.text = text
-        self.loading.number_of_dots = number_of_dots
         self.continue_exec = 1
         self.loading.start()
 
@@ -84,7 +83,6 @@ class View:
 
     def update_loading(self, percentage: int):
         self.loading.percentage = percentage
-        # self.loading.text = 'A' * int((self.frame.width - self.frame.tab * 2) * percentage / 100)
 
     def stop_loading(self):
         """ Stop the loading thread """
@@ -102,21 +100,14 @@ class _Loading(Thread):
         self.continue_exec = 0
         self.view_instance = view_instance  # To use the same frame object with view
         self.text = ""
-        self.number_of_dots = 5
-        
         self.percentage = 0
 
     def run(self):
-        nb = 0
         self.continue_exec = 1
         while self.continue_exec == 1:
 
-            nb = nb + 1 if nb < self.number_of_dots else 1
-
-            self.view_instance.frame.print_progress(self.percentage)
-            # print("\033[2A")  # Replace the cursor
-
-            time.sleep(0.1)
+            self.view_instance.frame.print_progress(self.text, self.percentage)
+            time.sleep(0.3)
 
 
     # def run(self):

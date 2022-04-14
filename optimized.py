@@ -1,5 +1,6 @@
 from multiprocessing import (Process, Manager)
 from time import time
+from time import sleep
 
 from stockmanager import (Stock, StocksCombination)
 from glutton import Glutton
@@ -8,15 +9,17 @@ from selectfile import SelectionFile
 
 
 MAX_AMOUNT = 500
-NB_LOOPS = 10000
+# NB_LOOPS = 10000
 NB_THREADS = 8
-TIME_IN_SECONDS = 10
+TIME_IN_SECONDS = 3
 
 # --−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 # -- File selection −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 select = SelectionFile(sf_header="Optimisation de l'algorithme", sf_bodies=['Selectionnez un fichier'])
 # list_of_actions = select.select_file()
 # list_of_actions = select.select_file('essai.csv')
+# list_of_actions = select.select_file('essai_24_actions.csv')
+# list_of_actions = select.select_file('essai_25_actions.csv')
 # list_of_actions = select.select_file('dataset1_Python+P7.csv')
 list_of_actions = select.select_file('dataset2_Python+P7.csv')
 
@@ -30,50 +33,10 @@ list_of_actions = select.select_file('dataset2_Python+P7.csv')
 # −−−−−−−−−−−−−−−−−−−--−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 # -- view −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 bodies = list()
-bodies.append(f'Fichier : {select.sf_current_choice}')
+bodies.append(f'Fichier : {select.sf_current_choice}\n' \
+              f'{len(list_of_actions)} actions\n' \
+              f'{NB_THREADS} threads pendant {TIME_IN_SECONDS} secondes')
 
-
-# -−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
-# -- Glutton random Thread −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
-def glutton_thread(list_actions, nb_loops, combinations):
-    glutton = Glutton(g_max=MAX_AMOUNT, g_list=list_actions)
-    combinations.append(glutton.random_by_tries(nb_loops))
-
-# --−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
-# --−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
-t0 = time()
-my_view = View(header='Glutton random', bodies=bodies)
-my_view.start_loading(text='Étude threads en cours ')
-
-# --−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
-# -- Lauching threads −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−-−−−−−−−−−−−−−−−−−−−−−
-nb_loops_per_thread = NB_LOOPS
-# nb_loops_per_thread = int(nb_tries / nb_threads)
-
-manager = Manager()
-combinations = manager.list()
-threads = []
-
-for i in range(0, NB_THREADS):
-    p = Process(target=glutton_thread, args=(list_of_actions, nb_loops_per_thread, combinations))
-    threads.append(p)
-    p.start()
-
-for t in threads:
-    t.join()
-
-best_combination = StocksCombination.best_stock_in_list(combinations)
-
-# --−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
-# -- Displays results −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
-bodies.append(f'{NB_THREADS} threads : {nb_loops_per_thread * NB_THREADS} combinaisons traitées en {time() - t0} secondes')
-bodies.append(f'{best_combination}')
-bodies.append(best_combination.sorted_stocks())
-
-my_view.stop_loading()
-my_view.show()
-# --−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
-# --−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 
 # --−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 # -- Glutton random Thread per time −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
@@ -86,7 +49,7 @@ def glutton_thread_time(list_actions, time_in_seconds, combinations, counters):
 
 t0 = time()
 my_view = View(header='Glutton random', bodies=bodies)
-my_view.start_loading(text='Étude threads en cours ')
+my_view.start_loading(text=f'En cours : {NB_THREADS} threads / {TIME_IN_SECONDS} s')
 
 # --−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 # -- Lauching threads −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−-−−−−−−−−−−−−−−−−−−−−−
@@ -100,6 +63,11 @@ for i in range(0, NB_THREADS):
     threads.append(p)
     p.start()
 
+# Progression
+while time() - t0 < TIME_IN_SECONDS:
+    sleep(0.5)
+    my_view.update_loading(round(100 * (time() - t0) / TIME_IN_SECONDS))
+
 for t in threads:
     t.join()
 
@@ -108,8 +76,7 @@ counter = sum(counters)
 
 # --−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 # -- Displays results −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
-bodies.append(f'{NB_THREADS} threads pendant {TIME_IN_SECONDS} secondes\n' \
-              f'{counter} combinaisons traitées en {time() - t0} secondes')
+bodies.append(f'{counter} combinaisons traitées en {time() - t0} secondes')
 bodies.append(f'{best_combination}')
 bodies.append(best_combination.sorted_stocks())
 
