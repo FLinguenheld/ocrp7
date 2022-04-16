@@ -2,14 +2,13 @@ from itertools import combinations as itertools_combinations
 from multiprocessing import (Process, Manager)
 from math import factorial
 from time import time
-from time import sleep
 
 from stockmanager import (Stock, StocksCombination)
 from views.view import View
 from selectfile import SelectionFile
 
-MAX_AMOUNT = 500.0
 
+MAX_AMOUNT = 500.0
 
 # --−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 # -- Mix/Max −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
@@ -28,7 +27,12 @@ def search_last_indice_before_maxi(list_of_actions: list[Stock], maxi: float):
 
 # --−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 # -- Threads −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
-def search_best(list_of_actions, nb_actions_per_combination, combinations, counters):
+def search_best(list_of_actions: list[Stock], nb_actions_per_combination: int, combinations, counters):
+    """ BruteForce algorithm with itertools_combinations. It finds all combinations for n stocks and saved the 
+        best one.
+        Allows to use it with threads. Give two manager.list to 'combinations'and 'counters'
+        These lists will be shared and filled by all threads.
+        Once all threads finished, just sort or sum manager.lists """
 
     best_combination = StocksCombination()
     counter = 0
@@ -45,24 +49,21 @@ def search_best(list_of_actions, nb_actions_per_combination, combinations, count
 # --−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 # -- File selection −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 select = SelectionFile(sf_header="Force brute", sf_bodies=['Selectionnez un fichier'])
-# list_of_actions = select.select_file()
-list_of_actions = select.select_file('essai.csv')
-# list_of_actions = select.select_file('essai_graph.csv')
-# list_of_actions = select.select_file('essai_24_actions.csv')
-# list_of_actions = select.select_file('essai_25_actions.csv')
-# list_of_actions = select.select_file('essai_27_actions.csv')
+list_of_actions = select.select_file()
+# list_of_actions = select.select_file('essai.csv')
 # list_of_actions = select.select_file('essai_28_actions.csv')
 # list_of_actions = select.select_file('dataset1_Python+P7.csv')
 # list_of_actions = select.select_file('dataset2_Python+P7.csv')
 
-# list_of_actions = list_of_actions[:15]
+t0 = time()
 
 # −−−−−−−−−−−−−−−−−−−--−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 # -- Min / Max to reduce the list_combinations amount −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 max = search_last_indice_before_maxi(sorted(list_of_actions, key=lambda k: k.f_price), maxi=MAX_AMOUNT)
 min = search_last_indice_before_maxi(sorted(list_of_actions, key=lambda k: k.f_price, reverse=True), maxi=MAX_AMOUNT)
 
-# combinaisons number ?
+# −−−−−−−−−−−−−−−−−−−--−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
+# -- combinaisons number ? −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 total_to_do = 0
 for i in range(min, max +1):
     total_to_do += int(factorial(len(list_of_actions)) / (factorial(i) * (factorial(len(list_of_actions) - i))))
@@ -73,10 +74,9 @@ bodies = list()
 bodies.append(f'Fichier : {select.sf_current_choice}\n' \
               f'{len(list_of_actions)} actions\n' \
               f'Nombre de combinaisons à tester : {total_to_do}')
+
 my_view = View(header='Force brute', bodies=bodies)
 my_view.start_loading(text='Étude en cours ')
-t0 = time()
-
 
 # −−−−−−−−−−−−−−−−−−−--−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 # -- Lauching threads −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−-−−−−−−−−−−−−−−−−−−−−−
@@ -91,12 +91,12 @@ for i in range(min, max + 1):
     p.start()
 
 for t in threads:
-    my_view.update_loading(sum(counters) / total_to_do * 100)
+    my_view.update_loading(int(StocksCombination.sum(counters) / total_to_do * 100))
     t.join()
 
 my_view.update_loading(100)
 best_combination = StocksCombination.best_stock_in_list(combinations)
-counter = sum(counters)
+counter = StocksCombination.sum(counters)
 
 # −−−−−−−−−−−−−−−−−−−--−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
 # -- Displays results −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−

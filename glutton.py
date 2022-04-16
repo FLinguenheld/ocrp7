@@ -4,12 +4,20 @@ from time import time
 
 from stockmanager import (Stock, StocksCombination)
 
+
 @dataclass
 class Glutton:
+    """ Glutton algorithm, give the maximum price and the list of stocks.
+        Then, use random by number of tries or by time.
+        Simple but fast, it compares a lot of combinations and keeps the best one O(n) """
+
     g_max: int
     g_list: list[Stock]
 
     def _random(self):
+        """ Algorithm, takes random index in stocks list to create and return a new combination.
+            Prevents duplications.
+            When price is close to maximum, it tries 5 more stocks to avoid a complete loop in stocks list """
 
         currentCombination = StocksCombination(stocks=[], max_amount=self.g_max)
         current_indexes = []
@@ -33,8 +41,8 @@ class Glutton:
 
         return currentCombination
 
-
     def random_by_tries(self, nb_tries):
+        """ Calls _random nb times and keeps the best combination """
 
         best_combination = StocksCombination()
         counter = 0
@@ -47,6 +55,8 @@ class Glutton:
         return best_combination
 
     def random_by_time(self, time_in_seconds):
+        """ Calls _random nb during 'time' and keeps the best combination.
+            Returns the best and a counter """
 
         best_combination = StocksCombination()
         counter = 0

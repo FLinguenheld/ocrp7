@@ -10,6 +10,11 @@ from stockmanager import (Stock)
 
 @dataclass
 class SelectionFile:
+    """ Displays a form to select a csv file in ./fichiers/
+        Once selected, loops in the file to create Stock objects and fills a list.
+        csv file has to have three columns : name, price, profit
+        prices and profits are convert in float. Invalidated values are ignored.
+        """
 
     sf_header: str
     sf_bodies: Optional[list[str]]
@@ -17,6 +22,8 @@ class SelectionFile:
     sf_current_choice: Any=""
 
     def select_file(self, force_to_test: str=''):
+        """ Creates displays the form, then fills and returns the list of actions
+            You can skip the form by forcing, just fills in the csv file's name """
 
         if not force_to_test:
             fields = []
@@ -37,9 +44,6 @@ class SelectionFile:
 
                 price = float(r['price'])
                 profit = float(r['profit'])
-
-                # price = abs(float(r['price'])
-                # profit = abs(float(r['profit'])
 
                 if price > 0 and profit > 0:
                     list_of_actions.append(Stock(f_name=r['name'],

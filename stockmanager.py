@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 from typing import(Any)
 
+
 @dataclass
 class Stock:
-    """ Container for one ation """
+    """ Container for one ation.
+        Allows to compare two stocks directly by their price """
 
     f_name: str
     f_price: float
@@ -17,7 +19,9 @@ class Stock:
 
 class StocksCombination:
     """ Container for a combination of several stocks
-        Performs calculations, checks and allows to compare with other combinations """
+        Performs calculations, checks and allows to compare with other combinations.
+        A combination can be create in constructor with a stock's Container
+        or stock by stock with the 'add' method. """
 
     def __init__(self, stocks: Any=None, max_amount: float=500.0):
         self.max_amount =  max_amount
@@ -84,6 +88,8 @@ class StocksCombination:
     def sorted_stocks(self):
         return "\n".join( str(i) for i in sorted(self.stocks))
 
+    # −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
+    # Static methods to avoid warning due to thread Manager
     @staticmethod
     def best_stock(a, b):
         """ Returns the best stock """
@@ -101,3 +107,13 @@ class StocksCombination:
             best_stock = StocksCombination.best_stock(best_stock, stock)
 
         return best_stock
+
+    @staticmethod
+    def sum(number_list):
+        """ Simple addition, to avoid warning with sum() and threads proxies """
+        total = 0
+        for value in number_list:
+            total += value
+
+        return total
+

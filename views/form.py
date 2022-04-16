@@ -51,9 +51,7 @@ class Form(View):
     """ Based on View, allows to display bodies and all fields.
         Ask user to fill each field and ask a confirmation """
 
-    def __init__(self, header: str, fields: List[FieldForm], bodies: List[str]=[],
-                # test: str
-            ):
+    def __init__(self, header: str, fields: List[FieldForm], bodies: List[str]=[]):
         self.fields = fields
         self.bodies_base = bodies
 
