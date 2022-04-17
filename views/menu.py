@@ -5,6 +5,7 @@ from typing import (Optional,
 from dataclasses import dataclass
 from .view import View
 
+
 @dataclass
 class FieldMenu:
     """ Container to easily build a menu in Menu class """
@@ -51,4 +52,4 @@ class Menu(View):
                         return elem.f_object if elem.f_object is not None else choice
 
             except KeyboardInterrupt:
-               break
+                break

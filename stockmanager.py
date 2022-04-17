@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import(Any)
+from typing import Any
 
 
 @dataclass
@@ -17,6 +17,7 @@ class Stock:
     def __gt__(self, other):
         return self.f_price > other.f_price
 
+
 class StocksCombination:
     """ Container for a combination of several stocks
         Performs calculations, checks and allows to compare with other combinations.
@@ -24,7 +25,7 @@ class StocksCombination:
         or stock by stock with the 'add' method. """
 
     def __init__(self, stocks: Any=None, max_amount: float=500.0):
-        self.max_amount =  max_amount
+        self.max_amount = max_amount
 
         self.stocks = stocks or []
         self.price = 0.0
@@ -51,7 +52,6 @@ class StocksCombination:
         self.complete_profit = 0.0
         self.stocks = []
 
-
     def add(self, new_stock: Stock):
         """ Adds a stock and updates price/profit/complete_profit
             Only if the max_amount is not exceeded
@@ -60,10 +60,10 @@ class StocksCombination:
         if (new_stock.f_price + self.price) <= self.max_amount:
             self.stocks.append(new_stock)
 
-            #Price
+            # Price
             self.price += new_stock.f_price
 
-            #Gain
+            # Gain
             self.profit += new_stock.f_price * new_stock.f_profit / 100
             self.complete_profit += new_stock.f_price * (1 + new_stock.f_profit / 100)
 
@@ -73,9 +73,9 @@ class StocksCombination:
 
     def __str__(self):
         if self.price > 0 and self.price <= self.max_amount:
-            return f"{len(self.stocks)} actions : coût {round(self.price, 3)}" \
-                                  f" — bénéfice {round(self.profit, 3)}" \
-                                  f" — bénéfice total {round(self.complete_profit, 3)}"
+            return f'{len(self.stocks)} actions : coût {round(self.price, 3)}'\
+                   f' — bénéfice {round(self.profit, 3)}'\
+                   f' — bénéfice total {round(self.complete_profit, 3)}'
         else:
             return f"combination invalide, prix : {self.price} (maximum autorisé : {self.max_amount})"
 
@@ -86,34 +86,16 @@ class StocksCombination:
         return len(self.stocks)
 
     def sorted_stocks(self):
-        return "\n".join( str(i) for i in sorted(self.stocks))
+        return "\n".join(str(i) for i in sorted(self.stocks))
 
     # −−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−−
     # Static methods to avoid warning due to thread Manager
     @staticmethod
     def best_stock(a, b):
         """ Returns the best stock """
-        if a < b:
-            return b
-        else:
-            return a
+        return b if a < b else a
 
     @staticmethod
     def best_stock_in_list(stocks_list):
-        """ Loops in the list and return the best combination """
-        best_stock = StocksCombination()
-
-        for stock in stocks_list:
-            best_stock = StocksCombination.best_stock(best_stock, stock)
-
-        return best_stock
-
-    @staticmethod
-    def sum(number_list):
-        """ Simple addition, to avoid warning with sum() and threads proxies """
-        total = 0
-        for value in number_list:
-            total += value
-
-        return total
-
+        """ Loops in the list and returns the best combination """
+        return max(stocks_list)

@@ -74,7 +74,7 @@ class Form(View):
             for field in self.fields:
 
                 while True:         # Wait valid value
-                    try :
+                    try:
                         self._update_bodies()
                         field.f_value = field.convert(self._ask_question(field.question_text()))
                         break

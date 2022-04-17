@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 from csv import DictReader
-from typing import(Optional,
-                   Any)
+from typing import (Optional, Any)
 
 from views.menu import (Menu, FieldMenu)
 from stockmanager import (Stock)
@@ -46,8 +45,6 @@ class SelectionFile:
                 profit = float(r['profit'])
 
                 if price > 0 and profit > 0:
-                    list_of_actions.append(Stock(f_name=r['name'],
-                                                 f_price = price,
-                                                 f_profit = profit))
+                    list_of_actions.append(Stock(f_name=r['name'], f_price=price, f_profit=profit))
 
         return list_of_actions

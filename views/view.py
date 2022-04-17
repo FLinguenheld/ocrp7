@@ -2,9 +2,7 @@ from threading import Thread
 import time
 import os
 
-from .frame import(
-        Justification,
-        Frame)
+from .frame import (Justification, Frame)
 
 
 class View:
@@ -53,7 +51,7 @@ class View:
 
     def _ask_confirmation(self, text: str="Confirmer ? (O/N)"):
         """ Finish the frame with a confirmation, return a bool """
-        
+
         while True:
             match self._ask_question(text).upper():
                 case "O":
@@ -72,7 +70,7 @@ class View:
         self.frame.print_line()
         self.frame.print_blank_line()
         self.frame.print_bottom()
-        print(f"\033[3A")
+        print("\033[3A")
 
         self.loading.text = text
         self.continue_exec = 1
@@ -90,7 +88,7 @@ class View:
 
 
 class _Loading(Thread):
-    """ Allows to display a loading in a thread 
+    """ Allows to display a loading in a thread
         Use start() to launch the thread. It will reprint the penultimate line with self.text and dots.
         Turn self.continue_exec to 0 to to stop """
 
@@ -108,16 +106,3 @@ class _Loading(Thread):
 
             self.view_instance.frame.print_progress(self.text, self.percentage)
             time.sleep(0.3)
-
-
-    # def run(self):
-    #     nb = 0
-    #     self.continue_exec = 1
-    #     while self.continue_exec == 1:
-
-    #         nb = nb + 1 if nb < self.number_of_dots else 1
-
-    #         self.view_instance.frame.print_text(self.text + ' .' * nb, Justification.LEFT)
-    #         print("\033[2A")  # Replace the cursor
-
-    #         time.sleep(0.3)

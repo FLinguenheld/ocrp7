@@ -11,8 +11,8 @@ Résolvez des problèmes en utilisant des algorithmes en Python
 L'objectif de ce projet est d'aborder l'algorithmie en développant des solutions permettant à une société 
 de maximiser ses investissements.  
 Une première liste de 20 actions est traitée avec un algorithme *bruteforce* puis deux autres plus importantes avec 
-un algorithme *glutton*.
-
+un algorithme *glutton*.  
+La valeur maximale des combinaisons est fixée à 500€.
 
 ****
 ### Installation

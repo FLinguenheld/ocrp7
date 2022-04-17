@@ -25,8 +25,8 @@ class Glutton:
 
         while len(current_indexes) < len(self.g_list):
 
-            index = randint(0, len(self.g_list) -1)
-            
+            index = randint(0, len(self.g_list) - 1)
+
             if index not in current_indexes:
                 current_indexes.append(index)
 
