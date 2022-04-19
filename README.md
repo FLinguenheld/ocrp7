@@ -33,7 +33,7 @@ Les nombres sont convertis en float, les valeurs nulles ou négatives sont ignor
 
 Entrez la commande :
 
-    python forcebrute.py
+    python bruteforce.py
 
 Sélectionnez le fichier à analyser et validez.  
 Le programme affichera le nombre de combinaisons à réaliser ainsi qu'une barre de progression.  

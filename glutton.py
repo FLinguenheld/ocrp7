@@ -20,8 +20,8 @@ class Glutton:
             When price is close to maximum, it tries 5 more stocks to avoid a complete loop in stocks list """
 
         currentCombination = StocksCombination(stocks=[], max_amount=self.g_max)
-        current_indexes = []
-        counter_extra = 0                                               # Allows to try again after a refusal
+        current_indexes = []                # Faster with an array of indexes than to check in combination’s list
+        counter_extra = 0                   # Allows to try again after a refusal
 
         while len(current_indexes) < len(self.g_list):
 

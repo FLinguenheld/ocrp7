@@ -17,7 +17,7 @@ MAX_AMOUNT = 500
 def glutton_thread_time(list_actions: list[Stock], time_in_seconds: int, combinations, counters):
     """ Glutton algorithm by time for threads. See class Glutton for more details.
         This function allows to use glutton with threads.
-        Give two manager.list to 'combinations'and 'counters'
+        Give two Manager.list to 'combinations'and 'counters'
         These lists will be shared and filled by all threads.
         Once all threads finished, just sort or sum manager.lists """
 
